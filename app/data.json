@@ -1,0 +1,112 @@
+{
+  "locations": [
+    {
+      "id": "loc_deck",
+      "icon": "/icons/deck.svg",
+      "alt": "deck icon",
+      "name": "Deck",
+      "devices": {
+        "light": [],
+        "plug": ["192.168.2.223", "192.168.2.210"]
+      }
+    },
+    {
+      "id": "loc_porch",
+      "icon": "/icons/porch.svg",
+      "alt": "porch icon",
+      "name": "Porch",
+      "devices": {
+        "light": ["16"],
+        "plug": []
+      }
+    },
+    {
+      "id": "loc_garage",
+      "icon": "/icons/garage.svg",
+      "alt": "garage icon",
+      "name": "Garage",
+      "devices": {
+        "light": ["9"],
+        "plug": ["192.168.2.221"]
+      }
+    },
+    {
+      "id": "loc_stairs",
+      "icon": "/icons/stairs.svg",
+      "alt": "stairs icon",
+      "name": "Stairs",
+      "devices": {
+        "light": ["14"],
+        "plug": []
+      }
+    },
+    {
+      "id": "loc_tv",
+      "icon": "/icons/tv.svg",
+      "alt": "tv icon",
+      "name": "TV",
+      "devices": {
+        "light": [],
+        "plug": ["192.168.2.209", "192.168.2.117"]
+      }
+    }
+  ],
+  "devices": [
+    {
+      "id": "192.168.2.223",
+      "type": "plug",
+      "name": "Christmas Lights",
+      "on_time": "17:30",
+      "off_time": "22:30"
+    },
+    {
+      "id": "192.168.2.210",
+      "type": "plug",
+      "name": "Deck Lights",
+      "on_time": "",
+      "off_time": "22:30"
+    },
+    {
+      "id": "192.168.2.221",
+      "type": "plug",
+      "name": "Garage Heater",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "192.168.2.209",
+      "type": "plug",
+      "name": "Main TV 1",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "192.168.2.117",
+      "type": "plug",
+      "name": "Main TV 2",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "14",
+      "type": "light",
+      "name": "Downstaris Strip Light",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "9",
+      "type": "light",
+      "name": "Garage Light",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "16",
+      "type": "light",
+      "name": "Front Porch Light",
+      "on_time": "",
+      "off_time": ""
+    }
+  ]
+}
