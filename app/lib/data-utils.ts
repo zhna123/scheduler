@@ -30,3 +30,12 @@ export async function findDeviceFromId(id: string) {
   const devices = data.devices as Device[];
   return devices.find(d => d.id === id)
 }
+
+export async function updateDeviceSchedule(deviceId: string, deviceType: string, deviceName: string, onTime: string, offTime: string) {
+  const file = await fs.readFile(process.cwd() + '/app/data.json', 'utf8');
+  const data = JSON.parse(file);
+  const filteredDevices = data.devices.filter(d => d.id !== deviceId)
+  data.devices = [...filteredDevices, {id: deviceId, type: deviceType, name: deviceName, on_time: onTime, off_time: offTime}]
+  await fs.writeFile(process.cwd() + '/app/data.json', JSON.stringify(data, null, 2));
+  
+}

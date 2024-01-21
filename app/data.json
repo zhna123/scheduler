@@ -7,7 +7,10 @@
       "name": "Deck",
       "devices": {
         "light": [],
-        "plug": ["192.168.2.223", "192.168.2.210"]
+        "plug": [
+          "192.168.2.223",
+          "192.168.2.210"
+        ]
       }
     },
     {
@@ -16,7 +19,9 @@
       "alt": "porch icon",
       "name": "Porch",
       "devices": {
-        "light": ["16"],
+        "light": [
+          "16"
+        ],
         "plug": []
       }
     },
@@ -26,8 +31,12 @@
       "alt": "garage icon",
       "name": "Garage",
       "devices": {
-        "light": ["9"],
-        "plug": ["192.168.2.221"]
+        "light": [
+          "9"
+        ],
+        "plug": [
+          "192.168.2.221"
+        ]
       }
     },
     {
@@ -36,7 +45,9 @@
       "alt": "stairs icon",
       "name": "Stairs",
       "devices": {
-        "light": ["14"],
+        "light": [
+          "14"
+        ],
         "plug": []
       }
     },
@@ -47,25 +58,14 @@
       "name": "TV",
       "devices": {
         "light": [],
-        "plug": ["192.168.2.209", "192.168.2.117"]
+        "plug": [
+          "192.168.2.209",
+          "192.168.2.117"
+        ]
       }
     }
   ],
   "devices": [
-    {
-      "id": "192.168.2.223",
-      "type": "plug",
-      "name": "Christmas Lights",
-      "on_time": "17:30",
-      "off_time": "22:30"
-    },
-    {
-      "id": "192.168.2.210",
-      "type": "plug",
-      "name": "Deck Lights",
-      "on_time": "",
-      "off_time": "22:30"
-    },
     {
       "id": "192.168.2.221",
       "type": "plug",
@@ -107,6 +107,20 @@
       "name": "Front Porch Light",
       "on_time": "",
       "off_time": ""
+    },
+    {
+      "id": "192.168.2.210",
+      "type": "plug",
+      "name": "Deck Lights",
+      "on_time": "1:00",
+      "off_time": "2:20"
+    },
+    {
+      "id": "192.168.2.223",
+      "type": "plug",
+      "name": "Christmas Lights",
+      "on_time": "not-set:not-set",
+      "off_time": "0:00"
     }
   ]
 }
