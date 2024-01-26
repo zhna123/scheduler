@@ -15,7 +15,8 @@ export default function LocationCard({
 }) {
   
   return (
-    <article className="bg-white aspect-[6/5] rounded-xl drop-shadow-lg flex">
+    <article className="bg-white aspect-[6/5] rounded-xl drop-shadow-lg flex 
+                          hover:drop-shadow-2xl transition-all duration-500">
       <Image 
         src={iconSrc}
         width={90}

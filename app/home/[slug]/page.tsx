@@ -15,13 +15,17 @@ export default async function Page(
     },
     searchParams?: {
       modal?: string,
-      deviceId?: string
+      deviceId?: string,
+      type?: string,
+      unschedule?: string
     }
   }
 ) {
 
   const modal = searchParams?.modal || ''
   const deviceId = searchParams?.deviceId || ''
+  const type = searchParams?.type || ''
+  const unschedule = searchParams?.unschedule || ''
 
   const locations = await getAllLocations();
   const location = locations.find(loc => loc.id === params.slug);
@@ -68,7 +72,7 @@ export default async function Page(
         <LightCards />
         <PlugCards />
       </main>
-      {modal && <Modal loc={params.slug} deviceId={deviceId} />}
+      {modal.length > 0 && <Modal loc={params.slug} deviceId={deviceId} unschedule={unschedule} type={type} />}
     </div>
   )
 }

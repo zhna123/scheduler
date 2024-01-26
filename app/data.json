@@ -67,13 +67,6 @@
   ],
   "devices": [
     {
-      "id": "192.168.2.221",
-      "type": "plug",
-      "name": "Garage Heater",
-      "on_time": "",
-      "off_time": ""
-    },
-    {
       "id": "192.168.2.209",
       "type": "plug",
       "name": "Main TV 1",
@@ -95,13 +88,6 @@
       "off_time": ""
     },
     {
-      "id": "9",
-      "type": "light",
-      "name": "Garage Light",
-      "on_time": "",
-      "off_time": ""
-    },
-    {
       "id": "16",
       "type": "light",
       "name": "Front Porch Light",
@@ -109,18 +95,32 @@
       "off_time": ""
     },
     {
-      "id": "192.168.2.210",
-      "type": "plug",
-      "name": "Deck Lights",
-      "on_time": "1:00",
-      "off_time": "2:20"
-    },
-    {
       "id": "192.168.2.223",
       "type": "plug",
       "name": "Christmas Lights",
-      "on_time": "not-set:not-set",
-      "off_time": "0:00"
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "192.168.2.210",
+      "type": "plug",
+      "name": "Deck Lights",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "192.168.2.221",
+      "type": "plug",
+      "name": "Garage Heater",
+      "on_time": "",
+      "off_time": ""
+    },
+    {
+      "id": "9",
+      "type": "light",
+      "name": "Garage Light",
+      "on_time": "",
+      "off_time": "20:15"
     }
   ]
 }

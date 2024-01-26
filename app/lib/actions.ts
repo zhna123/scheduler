@@ -1,56 +1,170 @@
 'use server'
 
-import axios from 'axios';
 import schedule from 'node-schedule';
-import { findDeviceFromId, updateDeviceSchedule } from './data-utils';
+import { updateDeviceSchedule } from './data-utils';
+import { LightsApi } from './hue/lights-api';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+import { scheduledJobs } from './scheduled-jobs';
+import { convertHour } from './time-util';
 
-export async function setSchedule(formData: FormData) {
+const FormSchema = z.object({
+  deviceType: z.string(),
+  deviceId: z.string(),
+  onHour12: z.coerce.number(),
+  onMinute: z.coerce.number(),
+  onAmPm: z.string(),
+  offHour12: z.coerce.number(),
+  offMinute: z.coerce.number(),
+  offAmPm: z.string(),
+  location: z.string()
+})
 
-  const { deviceType, deviceId, deviceName, onHour, onMinute, offHour, offMinute } = {    
-    deviceType: formData.get('deviceType')!.toString(),
-    deviceId: formData.get('deviceId')!.toString(),
-    deviceName: formData.get('deviceName')!.toString(),
+const OnSchedule = FormSchema.omit({offHour12: true, offMinute: true, offAmPm: true})
+const OffSchedule = FormSchema.omit({onHour12: true, onMinute: true, onAmPm: true})
+const CancelSchedule = FormSchema.omit({onHour12: true, onMinute: true, onAmPm: true, offHour12: true, offMinute: true, offAmPm: true})
 
-    onHour: formData.get('onTimePicker_hours'),
+
+export async function setOnSchedule(formData: FormData) {
+
+  const { deviceType, deviceId, onHour12, onMinute, onAmPm, location } = OnSchedule.parse({    
+    deviceType: formData.get('deviceType'),
+    deviceId: formData.get('deviceId'),
+
+    onHour12: formData.get('onTimePicker_hours'),
     onMinute: formData.get('onTimePicker_minutes'),
+    onAmPm: formData.get('onTimePicker_ampm'),
 
-    offHour: formData.get('offTimePicker_hours'),
-    offMinute: formData.get('offTimePicker_minutes')
-  }
+    location: formData.get('location')
+  })
 
-  const onTime = `${onHour}:${onMinute}`;
-  const offTime = `${offHour}:${offMinute}`
-
-  await updateDeviceSchedule(deviceId, deviceType, deviceName, onTime, offTime)
+  const onHour = convertHour(onHour12, onAmPm)
   
-  // // gets these from device type and device id
-  // const getUrl = `http://192.168.2.203:1981/plugs`; // constant
-  // const plugId = '192.168.2.223';  // constant
+  // use node-schedule
+  const rule = new schedule.RecurrenceRule();
+  rule.hour = onHour
+  rule.minute = onMinute
+  // on schedule
+  const lights = new LightsApi();
+  const jobName = `${deviceType}_${deviceId}_on`
+  const job = schedule.scheduleJob(jobName, rule, async function(){
+    try {
+      await lights.putState(deviceId, { on: true });
+    } catch (error) {
+      console.log('error turning on device:' + deviceId)
+    }
+  })  
+  job.on('success', (result) => {
+    console.log('on event triggered successfully.', result)
+  })
+  job.on('error', (err) => {
+    console.log('failed to trigger on event.', err)
+  })
+  scheduledJobs[jobName] = job;
 
-  // const putUrl = `${getUrl}/${plugId}/state`;
+  // update json data file
+  const onTime = `${onHour}:${onMinute.toString().padStart(2, '0')}`;
+  await updateDeviceSchedule(deviceId, {on_time: onTime})
 
-  // // replace action
-  // const putOptions = { body: { on: true }, json: true };
+  console.log("data file updated.")
 
-  // const getOptions = { json: true };
-
-  // // use node-schedule
-  // const rule = new schedule.RecurrenceRule();
-  // // from raw data
-  // rule.hour = 0
-  // rule.minute = 0
-  // const job = schedule.scheduleJob(rule, function(){
-  //   script(putUrl, putOptions)
-  // })
-  // job.on('success', (result) => {
-  //   console.log('all done.', result)
-  // })
-  // job.on('error', (err) => {
-  //   console.log('failed task.', err)
-  // })
-
+  revalidatePath(`/home/${location}`)
+  redirect(`/home/${location}`)
 }
 
-async function script(putUrl: string, putOptions: any) {
-  return await axios.put(putUrl, putOptions);
+export async function setOffSchedule(formData: FormData) {
+
+  const { deviceType, deviceId, offHour12, offMinute, offAmPm, location } = OffSchedule.parse({    
+    deviceType: formData.get('deviceType'),
+    deviceId: formData.get('deviceId'),
+
+    offHour12: formData.get('offTimePicker_hours'),
+    offMinute: formData.get('offTimePicker_minutes'),
+    offAmPm: formData.get('offTimePicker_ampm'),
+
+    location: formData.get('location')
+  })
+
+  const offHour = convertHour(offHour12, offAmPm)
+
+  // use node-schedule
+  // off schedule
+  const rule = new schedule.RecurrenceRule();
+  rule.hour = offHour
+  rule.minute = offMinute
+
+  const lights = new LightsApi();
+  const jobName = `${deviceType}_${deviceId}_off`
+  const job = schedule.scheduleJob(jobName, rule, async function(){
+    try {
+      await lights.putState(deviceId, { on: false });
+    } catch (error) {
+      console.log('error turning off device:' + deviceId)
+    }
+  })
+  job.on('success', (result) => {
+    console.log('event triggered successfully.', result)
+  })
+  job.on('error', (err) => {
+    console.log('failed to trigger event.', err)
+  })
+  scheduledJobs[jobName] = job;
+
+  const offTime = `${offHour}:${offMinute.toString().padStart(2, '0')}`
+  await updateDeviceSchedule(deviceId, {off_time: offTime})
+
+  console.log("data file updated.")
+
+  revalidatePath(`/home/${location}`)
+  redirect(`/home/${location}`)
+}
+
+
+export async function cancelOnSchedule(formData: FormData) {
+
+  const { deviceType, deviceId, location } = CancelSchedule.parse({    
+    deviceType: formData.get('deviceType'),
+    deviceId: formData.get('deviceId'),
+    location: formData.get('location')
+  })
+
+  const jobName = `${deviceType}_${deviceId}_on`
+
+  const scheduledJob = scheduledJobs[jobName];
+  if (scheduledJob) {
+    scheduledJob.cancel()
+  } else {
+    console.log('job not found')
+  }
+
+  await updateDeviceSchedule(deviceId, {on_time: ''})
+  console.log("data file updated.")
+
+  revalidatePath(`/home/${location}`)
+  redirect(`/home/${location}`)
+}
+
+export async function cancelOffSchedule(formData: FormData) {
+
+  const { deviceType, deviceId, location } = CancelSchedule.parse({    
+    deviceType: formData.get('deviceType'),
+    deviceId: formData.get('deviceId'),
+    location: formData.get('location')
+  })
+
+  const jobName = `${deviceType}_${deviceId}_off`
+
+  const scheduledJob = scheduledJobs[jobName];
+  if (scheduledJob) {
+    scheduledJob.cancel()
+  } else {
+    console.log('job not found')
+  }
+
+  await updateDeviceSchedule(deviceId, {off_time: ''})
+  console.log("data file updated.")
+
+  revalidatePath(`/home/${location}`)
+  redirect(`/home/${location}`)
 }
