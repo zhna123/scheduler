@@ -16,7 +16,7 @@ export default function OnForm({device, location}: {device: Device, location: st
 
       <label className="flex items-center justify-between mb-10">
         Turn On
-        <TimePicker id="onTimePicker" />
+        <TimePicker id="onTimePicker" time="" />
       </label>
       
       <div className="flex items-center justify-around mb-20 mt-auto text-lg font-medium">

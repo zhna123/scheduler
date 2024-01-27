@@ -3,6 +3,7 @@ import { Device } from "../lib/data-utils";
 import Toggle from "./toggle";
 import { ReactNode } from "react";
 import { convert24HourTo12Hour } from "../lib/time-util";
+import { EditButton } from "./edit-btn";
 
 export default function DeviceCard({
   typeIconSrc,
@@ -22,18 +23,13 @@ export default function DeviceCard({
     return device.off_time.length > 0
   }
 
-  const ScheduleLayout = ({children}: {children: ReactNode}) => {
+  const ScheduleLayout = ({children, deviceId, type}: {children: ReactNode, deviceId: string, type: string}) => {
     return (
       <div className="flex gap-6 items-center">
         <div className="font-light">
           { children }
         </div>
-        <Image 
-          src="/icons/edit.svg"
-          width={25}
-          height={25}
-          alt="edit button"
-        />
+        <EditButton deviceId={deviceId} type={type} />
       </div>
     )
   }
@@ -43,17 +39,17 @@ export default function DeviceCard({
   const offTime = device.off_time.split(':')
   const offTime12 = convert24HourTo12Hour(offTime[0], offTime[1])
 
-  const OnSchedule = () => {
+  const OnSchedule = ({deviceId, type}: {deviceId: string, type: string}) => {
     return (
-      <ScheduleLayout>
+      <ScheduleLayout deviceId={deviceId} type={type}>
         <p>{onTime12}</p> 
       </ScheduleLayout>
     )
   }
 
-  const OffSchedule = () => {
+  const OffSchedule = ({deviceId, type}: {deviceId: string, type: string}) => {
     return (
-      <ScheduleLayout>
+      <ScheduleLayout deviceId={deviceId} type={type}>
         <p>{offTime12}</p> 
       </ScheduleLayout>
     )
@@ -81,11 +77,11 @@ export default function DeviceCard({
       </div>
       <div className="p-6 pt-12 flex flex-col gap-2">
         <Toggle isScheduled={isOnScheduled()} deviceId={device.id} type='on'/>
-        { isOnScheduled() ? <OnSchedule/> : <Invisible />}
+        { isOnScheduled() ? <OnSchedule deviceId={device.id} type='on'/> : <Invisible />}
       </div>
       <div className="p-6 flex flex-col gap-2">
         <Toggle isScheduled={isOffScheduled()} deviceId={device.id} type='off'/>
-        { isOffScheduled() ? <OffSchedule /> : <Invisible />}
+        { isOffScheduled() ? <OffSchedule deviceId={device.id} type='off'/> : <Invisible />}
       </div>
     </article>
   )

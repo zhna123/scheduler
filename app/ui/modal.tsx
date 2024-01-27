@@ -6,9 +6,11 @@ import OnForm from "./create-on-form";
 import OffForm from "./create-off-form";
 import CancelOnForm from "./cancel-on-form";
 import CancelOffForm from "./cancel-off-form";
+import EditOnForm from "./edit-on-form";
+import EditOffForm from "./edit-off-form";
 
 
-export default async function Modal({loc, deviceId, unschedule, type}: {loc: string, deviceId: string, unschedule: string, type: string}) {
+export default async function Modal({loc, deviceId, unschedule, type, edit}: {loc: string, deviceId: string, unschedule: string, type: string, edit: string}) {
   const device = await findDeviceFromId(deviceId)
 
   const ModalLayout = ({children}: { children: ReactNode}) => {
@@ -71,11 +73,30 @@ export default async function Modal({loc, deviceId, unschedule, type}: {loc: str
     )
   }
 
+  const EditForm = () => {
+    return (
+      <>
+      {
+        type === 'on' ? 
+          <ModalLayout>
+            <EditOnForm device={device!} location={loc} /> 
+          </ModalLayout>
+          : 
+          <ModalLayout>
+            <EditOffForm device={device!} location={loc} />
+          </ModalLayout>
+      }
+      </>
+    )
+  }
+
   return (
     <>
     {
-      unschedule === 'true' ? (type === 'on' ? <UnscheduleOnForm /> : <UnscheduleOffForm />)
-        : (type === 'on' ? <ScheduleOnForm /> : <ScheduleOffForm />)
+      edit === 'true' ? <EditForm /> : (
+        unschedule === 'true' ? (type === 'on' ? <UnscheduleOnForm /> : <UnscheduleOffForm />)
+          : (type === 'on' ? <ScheduleOnForm /> : <ScheduleOffForm />)
+      )
     }
     </>
   )

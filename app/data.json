@@ -120,7 +120,7 @@
       "type": "light",
       "name": "Garage Light",
       "on_time": "",
-      "off_time": "20:15"
+      "off_time": "20:25"
     }
   ]
 }

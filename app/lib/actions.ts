@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { scheduledJobs } from './scheduled-jobs';
-import { convertHour } from './time-util';
+import { convertHourTo24 } from './time-util';
 
 const FormSchema = z.object({
   deviceType: z.string(),
@@ -39,15 +39,18 @@ export async function setOnSchedule(formData: FormData) {
     location: formData.get('location')
   })
 
-  const onHour = convertHour(onHour12, onAmPm)
+  const onHour = convertHourTo24(onHour12, onAmPm)
   
+  const jobName = `${deviceType}_${deviceId}_on`
+  if (scheduledJobs[jobName]) {
+    scheduledJobs[jobName].cancel()
+  }
   // use node-schedule
   const rule = new schedule.RecurrenceRule();
   rule.hour = onHour
   rule.minute = onMinute
   // on schedule
   const lights = new LightsApi();
-  const jobName = `${deviceType}_${deviceId}_on`
   const job = schedule.scheduleJob(jobName, rule, async function(){
     try {
       await lights.putState(deviceId, { on: true });
@@ -86,7 +89,7 @@ export async function setOffSchedule(formData: FormData) {
     location: formData.get('location')
   })
 
-  const offHour = convertHour(offHour12, offAmPm)
+  const offHour = convertHourTo24(offHour12, offAmPm)
 
   // use node-schedule
   // off schedule
@@ -94,8 +97,12 @@ export async function setOffSchedule(formData: FormData) {
   rule.hour = offHour
   rule.minute = offMinute
 
-  const lights = new LightsApi();
   const jobName = `${deviceType}_${deviceId}_off`
+  if (scheduledJobs[jobName]) {
+    scheduledJobs[jobName].cancel()
+  }
+
+  const lights = new LightsApi();
   const job = schedule.scheduleJob(jobName, rule, async function(){
     try {
       await lights.putState(deviceId, { on: false });
@@ -136,6 +143,7 @@ export async function cancelOnSchedule(formData: FormData) {
     scheduledJob.cancel()
   } else {
     console.log('job not found')
+    return
   }
 
   await updateDeviceSchedule(deviceId, {on_time: ''})
@@ -160,6 +168,7 @@ export async function cancelOffSchedule(formData: FormData) {
     scheduledJob.cancel()
   } else {
     console.log('job not found')
+    return 
   }
 
   await updateDeviceSchedule(deviceId, {off_time: ''})
@@ -168,3 +177,13 @@ export async function cancelOffSchedule(formData: FormData) {
   revalidatePath(`/home/${location}`)
   redirect(`/home/${location}`)
 }
+
+export async function editOnSchedule(formData: FormData) {
+  await setOnSchedule(formData)
+}
+
+export async function editOffSchedule(formData: FormData) {
+  await setOffSchedule(formData)
+}
+
+
