@@ -119,8 +119,8 @@
       "id": "9",
       "type": "light",
       "name": "Garage Light",
-      "on_time": "",
-      "off_time": "20:25"
+      "on_time": "20:30",
+      "off_time": ""
     }
   ]
 }
