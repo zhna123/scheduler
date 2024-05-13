@@ -2,17 +2,24 @@
 
 A smart home scheduling web app that enables automated control of smart devices via user-set schedules.
 
-This project is developed with
-- Next.js app router
+## Technologies
+- Next.js
+  * Incorporated new features from Next.js and react, including app router and server actions.
 - Typescript
 - TailwindCSS
 
-Device and scheduling data are stored in json file.
+## Implementations
 
-The project includes features from Next.js including:
-- Use of search params
-- Server actions for data mutation
-- Instrumentation
+* The popup modal is implemented using search params to take advantage of server-side rendering.
+* The form submission is handled by server actions, which eliminates the need for creating API endpoints, and ensures data security.
+* Device and scheduling data are written and configured using json file.
+
+
+## screenshots
+
+After the user chooses a schedule to set, a form pops open for them to enter the time.
+
+![screen](/screen/screen.png)
 
 
 
